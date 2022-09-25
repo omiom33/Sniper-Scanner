@@ -10,6 +10,7 @@ $Id: Class.py,v 1.6 2002/04/23 12:52:19 anthonybaxter Exp $
 """
 
 
+
 IN = 1          # the Internet
 CS = 2          # the CSNET class (Obsolete - used only for examples in
 # some obsolete RFCs)
@@ -25,17 +26,11 @@ ANY = 255       # any class
 # Construct reverse mapping dictionary
 
 _names = dir()
-classmap = {}
-for _name in _names:
-    if _name[0] != '_':
-        classmap[eval(_name)] = _name
+classmap = {eval(_name): _name for _name in _names if _name[0] != '_'}
 
 
 def classstr(klass):
-    if klass in classmap:
-        return classmap[klass]
-    else:
-        return repr(klass)
+    return classmap[klass] if klass in classmap else repr(klass)
 
 #
 # $Log: Class.py,v $

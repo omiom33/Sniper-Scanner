@@ -64,10 +64,10 @@ if 'http' in target:
 else:
     domain = target
     try:
-        br.open('http://' + target)
-        target = 'http://' + target
+        br.open(f'http://{target}')
+        target = f'http://{target}'
     except:
-        target = 'https://' + target
+        target = f'https://{target}'
 
 def sqli(url):
     print '%s Using SQLMap api to check for SQL injection vulnerabilities. Don\'t worry we are using an online service and it doesn\'t depend on your internet connection. This scan will take 2-3 minutes.' % run
@@ -175,10 +175,9 @@ def bypass(domain):
     result = br.open(
         'http://www.crimeflare.info/cgi-bin/cfsearch.cgi ', post).read()
 
-    match = search(r' \b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', result)
-    if match:
+    if match := search(r' \b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', result):
         bypass.ip_addr = match.group().split(' ')[1][:-1]
-        print '%s Real IP Address : %s' % (good, bypass.ip_addr)
+        bypass.ip_addr = match.group().split(' ')[1][:-1]
 
 def dnsdump(domain):
     res = DNSDumpsterAPI(False).search(domain)

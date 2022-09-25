@@ -106,8 +106,7 @@ class Packer:
 
     def addstring(self, s):
         if len(s) > 255:
-            raise ValueError("Can't encode string of length " +
-                             "%s (> 255)" % (len(s)))
+            raise ValueError(("Can't encode string of length " + f"{len(s)} (> 255)"))
         self.addbyte(chr(len(s)))
         self.addbytes(s)
 
@@ -232,10 +231,7 @@ class Unpacker:
             return ''
         domain = self.getbytes(i)
         remains = self.getname()
-        if not remains:
-            return domain
-        else:
-            return domain + '.' + remains
+        return f'{domain}.{remains}' if remains else domain
 
 
 # Test program for packin/unpacking (section 4.1.4)
@@ -642,16 +638,16 @@ class DnsResult:
          self.header['nscount'], self.header['arcount']) = u.getHeader()
         self.header['opcodestr'] = Opcode.opcodestr(self.header['opcode'])
         self.header['status'] = Status.statusstr(self.header['rcode'])
-        for i in range(self.header['qdcount']):
+        for _ in range(self.header['qdcount']):
             # print 'QUESTION %d:' % i,
             self.questions.append(self.storeQ(u))
-        for i in range(self.header['ancount']):
+        for _ in range(self.header['ancount']):
             # print 'ANSWER %d:' % i,
             self.answers.append(self.storeRR(u))
-        for i in range(self.header['nscount']):
+        for _ in range(self.header['nscount']):
             # print 'AUTHORITY RECORD %d:' % i,
             self.authority.append(self.storeRR(u))
-        for i in range(self.header['arcount']):
+        for _ in range(self.header['arcount']):
             # print 'ADDITIONAL RECORD %d:' % i,
             self.additional.append(self.storeRR(u))
 
@@ -673,7 +669,7 @@ class DnsResult:
         #        type, typename,
         #        klass, Class.classstr(class),
         #        ttl)
-        mname = 'get%sdata' % r['typename']
+        mname = f"get{r['typename']}data"
         if hasattr(u, mname):
             r['data'] = getattr(u, mname)()
         else:

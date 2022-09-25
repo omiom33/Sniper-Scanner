@@ -26,8 +26,20 @@ class search_googleCSE:
 
     def do_search(self):
         h = httplib.HTTPS(self.server)
-        h.putrequest('GET', "/customsearch/v1?key=" + self.api_key +"&highRange=" + str(self.highRange) + "&lowRange=" + str(self.lowRange) + "&cx=" +self.cse_id +
-                     "&start=" + str(self.counter) + "&q=%40\"" + self.word + "\"")
+        h.putrequest(
+            'GET',
+            (
+                (
+                    (
+                        f"/customsearch/v1?key={self.api_key}&highRange={str(self.highRange)}&lowRange={str(self.lowRange)}&cx={self.cse_id}&start={str(self.counter)}"
+                        + "&q=%40\""
+                    )
+                    + self.word
+                )
+                + "\""
+            ),
+        )
+
         h.putheader('Host', self.server)
         h.putheader('User-agent', self.userAgent)
         h.endheaders()
@@ -37,8 +49,11 @@ class search_googleCSE:
 
     def do_search_files(self):
         h = httplib.HTTPS(self.server)
-        h.putrequest('GET', "/customsearch/v1?key=" + self.api_key +"&highRange=" + str(self.highRange) + "&lowRange=" + str(self.lowRange) + "&cx=" +self.cse_id +
-                     "&start=" + str(self.counter) + "&q=filetype:" + files +"%20site:" + self.word)
+        h.putrequest(
+            'GET',
+            f"/customsearch/v1?key={self.api_key}&highRange={str(self.highRange)}&lowRange={str(self.lowRange)}&cx={self.cse_id}&start={str(self.counter)}&q=filetype:{files}%20site:{self.word}",
+        )
+
         h.putheader('Host', self.server)
         h.putheader('User-agent', self.userAgent)
         h.endheaders()
@@ -50,11 +65,7 @@ class search_googleCSE:
     def check_next(self):
         renext = re.compile('>  Next  <')
         nextres = renext.findall(self.results)
-        if nextres != []:
-            nexty = "1"
-        else:
-            nexty = "0"
-        return nexty
+        return "1" if nextres != [] else "0"
 
     def get_emails(self):
         rawres = myparser.parser(self.totalresults, self.word)
@@ -71,11 +82,11 @@ class search_googleCSE:
 
     def process(self):
         tracker=self.counter + self.lowRange
+        #time.sleep(1)
+        ESC=chr(27)
         while tracker <= self.limit:
             self.do_search()
-            #time.sleep(1)
-            ESC=chr(27)
-            sys.stdout.write(ESC + '[2K' + ESC+'[G')
+            sys.stdout.write(f'{ESC}[2K{ESC}[G')
             sys.stdout.write("\r\t" + "Searching  " + str(self.counter+self.lowRange) + " results ..." )
             sys.stdout.flush()
             #print "\tSearching " + str(self.counter+self.lowRange) + " results...\t\t\t\t\t\r"

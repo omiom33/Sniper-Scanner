@@ -231,13 +231,10 @@ class IPint:
         prefixlen = -1
 
         # handling of non string values in constructor
-        if isinstance(data, types.IntType) or isinstance(data, types.LongType):
+        if isinstance(data, (types.IntType, types.LongType)):
             self.ip = long(data)
             if ipversion == 0:
-                if self.ip < 0x100000000:
-                    ipversion = 4
-                else:
-                    ipversion = 6
+                ipversion = 4 if self.ip < 0x100000000 else 6
             if ipversion == 4:
                 prefixlen = 32
             elif ipversion == 6:
@@ -246,7 +243,6 @@ class IPint:
                 raise ValueError("only IPv4 and IPv6 supported")
             self._ipversion = ipversion
             self._prefixlen = prefixlen
-        # handle IP instance as an parameter
         elif isinstance(data, IPint):
             self._ipversion = data._ipversion
             self._prefixlen = data._prefixlen
@@ -361,30 +357,28 @@ class IPint:
         want == 3               -lastip                  1.2.3.0-1.2.3.255
         """
 
-        if (self._ipversion == 4 and self._prefixlen == 32) or \
-           (self._ipversion == 6 and self._prefixlen == 128):
-            if self.NoPrefixForSingleIp:
-                want = 0
+        if (
+            (self._ipversion == 4 and self._prefixlen == 32)
+            or (self._ipversion == 6 and self._prefixlen == 128)
+        ) and self.NoPrefixForSingleIp:
+            want = 0
         if want is None:
             want = self.WantPrefixLen
-            if want is None:
-                want = 1
-        if want:
-            if want == 2:
-                # this should work wit IP and IPint
-                netmask = self.netmask()
-                if not isinstance(netmask, types.IntType) and not isinstance(netmask, types.LongType):
-                    netmask = netmask.int()
-                return "/%s" % (intToIp(netmask, self._ipversion))
-            elif want == 3:
-                return (
-                    "-%s" % (intToIp(self.ip + self.len() - 1, self._ipversion))
-                )
-            else:
-                # default
-                return "/%d" % (self._prefixlen)
-        else:
+        if want is None:
+            want = 1
+        if not want:
             return ''
+        if want == 2:
+            # this should work wit IP and IPint
+            netmask = self.netmask()
+            if not isinstance(netmask, types.IntType) and not isinstance(netmask, types.LongType):
+                netmask = netmask.int()
+            return f"/{intToIp(netmask, self._ipversion)}"
+        elif want == 3:
+            return f"-{intToIp(self.ip + self.len() - 1, self._ipversion)}"
+        else:
+            # default
+            return "/%d" % (self._prefixlen)
 
         # We have different Favours to convert to:
         # strFullsize   127.0.0.1    2001:0658:022a:cafe:0200:c0ff:fe8d:08fa
@@ -428,30 +422,28 @@ class IPint:
 
         if self._ipversion == 4:
             return self.strFullsize(wantprefixlen)
-        else:
-            # find the longest sequence of '0'
-            hextets = [int(x, 16) for x in self.strFullsize(0).split(':')]
-            # every element of followingzeros will contain the number of zeros
-            # following the corrospondending element of hextetes
-            followingzeros = [0] * 8
-            for i in range(len(hextets)):
-                followingzeros[i] = _countFollowingZeros(hextets[i:])
-            # compressionpos is the position where we can start removing zeros
-            compressionpos = followingzeros.index(max(followingzeros))
-            if max(followingzeros) > 1:
+        # find the longest sequence of '0'
+        hextets = [int(x, 16) for x in self.strFullsize(0).split(':')]
+        # every element of followingzeros will contain the number of zeros
+        # following the corrospondending element of hextetes
+        followingzeros = [0] * 8
+        for i in range(len(hextets)):
+            followingzeros[i] = _countFollowingZeros(hextets[i:])
+        # compressionpos is the position where we can start removing zeros
+        compressionpos = followingzeros.index(max(followingzeros))
+        if max(followingzeros) <= 1:
+            return self.strNormal() + self._printPrefix(wantprefixlen)
                 # genererate string with the longest number of zeros cut out
                 # now we need hextets as strings
-                hextets = [x for x in self.strNormal(0).split(':')]
-                while compressionpos < len(hextets) and hextets[compressionpos] == '0':
-                    del(hextets[compressionpos])
-                hextets.insert(compressionpos, '')
-                if compressionpos + 1 >= len(hextets):
-                    hextets.append('')
-                if compressionpos == 0:
-                    hextets = [''] + hextets
-                return ':'.join(hextets) + self._printPrefix(wantprefixlen)
-            else:
-                return self.strNormal() + self._printPrefix(wantprefixlen)
+        hextets = list(self.strNormal(0).split(':'))
+        while compressionpos < len(hextets) and hextets[compressionpos] == '0':
+            del(hextets[compressionpos])
+        hextets.insert(compressionpos, '')
+        if compressionpos + 1 >= len(hextets):
+            hextets.append('')
+        if compressionpos == 0:
+            hextets = [''] + hextets
+        return ':'.join(hextets) + self._printPrefix(wantprefixlen)
 
     def strNormal(self, wantprefixlen=None):
         """Return a string representation in the usual format.
@@ -553,10 +545,14 @@ class IPint:
             raise ValueError("only IPv4 and IPv6 supported")
 
         bits = self.strBin()
-        for i in range(len(bits), 0, -1):
-            if bits[:i] in iprange:
-                return iprange[bits[:i]]
-        return "unknown"
+        return next(
+            (
+                iprange[bits[:i]]
+                for i in range(len(bits), 0, -1)
+                if bits[:i] in iprange
+            ),
+            "unknown",
+        )
 
     def netmask(self):
         """Return netmask as an integer.
@@ -779,7 +775,7 @@ class IPint:
         '0xf5ffffe7'
         """
 
-        thehash = int(-1)
+        thehash = -1
         ip = self.ip
         while ip > 0:
             thehash = thehash ^ (ip & 0x7fffffff)
@@ -846,17 +842,13 @@ class IP(IPint):
             ret = []
             # TODO: Refactor. Add support for IPint objects
             if self.len() < 2 ** 8:
-                for x in self:
-                    ret.append(x.reverseName())
+                ret.extend(x.reverseName() for x in self)
             elif self.len() < 2 ** 16:
-                for i in range(0, self.len(), 2 ** 8):
-                    ret.append(self[i].reverseName()[2:])
+                ret.extend(self[i].reverseName()[2:] for i in range(0, self.len(), 2 ** 8))
             elif self.len() < 2 ** 24:
-                for i in range(0, self.len(), 2 ** 16):
-                    ret.append(self[i].reverseName()[4:])
+                ret.extend(self[i].reverseName()[4:] for i in range(0, self.len(), 2 ** 16))
             else:
-                for i in range(0, self.len(), 2 ** 24):
-                    ret.append(self[i].reverseName()[6:])
+                ret.extend(self[i].reverseName()[6:] for i in range(0, self.len(), 2 ** 24))
             return ret
         elif self._ipversion == 6:
             s = hex(self.ip)[2:].lower()
@@ -869,7 +861,7 @@ class IP(IPint):
             s.reverse()
             s = '.'.join(s)
             first_nibble_index = int(32 - (self._prefixlen / 4)) * 2
-            return ["%s.ip6.int." % s[first_nibble_index:]]
+            return [f"{s[first_nibble_index:]}.ip6.int."]
         else:
             raise ValueError("only IPv4 and IPv6 supported")
 
@@ -892,8 +884,8 @@ class IP(IPint):
             s.reverse()
             first_byte_index = int(4 - (self._prefixlen / 8))
             if self._prefixlen % 8 != 0:
-                nibblepart = "%s-%s" % (s[3 - (self._prefixlen / 8)],
-                                        intToIp(self.ip + self.len() - 1, 4).split('.')[-1])
+                nibblepart = f"{s[3 - self._prefixlen / 8]}-{intToIp(self.ip + self.len() - 1, 4).split('.')[-1]}"
+
                 if nibblepart[-1] == 'l':
                     nibblepart = nibblepart[:-1]
                 nibblepart += '.'
@@ -901,15 +893,15 @@ class IP(IPint):
                 nibblepart = ""
 
             s = '.'.join(s[first_byte_index:])
-            return "%s%s.in-addr.arpa." % (nibblepart, s)
+            return f"{nibblepart}{s}.in-addr.arpa."
 
         elif self._ipversion == 6:
             s = hex(self.ip)[2:].lower()
             if s[-1] == 'l':
                 s = s[:-1]
             if self._prefixlen % 4 != 0:
-                nibblepart = "%s-%s" % (s[self._prefixlen:],
-                                        hex(self.ip + self.len() - 1)[2:].lower())
+                nibblepart = f"{s[self._prefixlen:]}-{hex(self.ip + self.len() - 1)[2:].lower()}"
+
                 if nibblepart[-1] == 'l':
                     nibblepart = nibblepart[:-1]
                 nibblepart += '.'
@@ -919,7 +911,7 @@ class IP(IPint):
             s.reverse()
             s = '.'.join(s)
             first_nibble_index = int(32 - (self._prefixlen / 4)) * 2
-            return "%s%s.ip6.int." % (nibblepart, s[first_nibble_index:])
+            return f"{nibblepart}{s[first_nibble_index:]}.ip6.int."
         else:
             raise ValueError("only IPv4 and IPv6 supported")
 
@@ -964,10 +956,9 @@ class IP(IPint):
         if self > other:
             # fixed by Skinny Puppy <skin_pup-IPy@happypoo.com>
             return other.__add__(self)
-        else:
-            ret = IP(self.int())
-            ret._prefixlen = self.prefixlen() - 1
-            return ret
+        ret = IP(self.int())
+        ret._prefixlen = self.prefixlen() - 1
+        return ret
 
 
 def parseAddress(ipstr):
@@ -994,11 +985,7 @@ def parseAddress(ipstr):
             raise ValueError(
                 "%r: IP Address can't be bigger than 2^128" %
                 (ipstr))
-        if ret < 0x100000000:
-            return (ret, 4)
-        else:
-            return (ret, 6)
-
+        return (ret, 4) if ret < 0x100000000 else (ret, 6)
     if ipstr.find(':') != -1:
         # assume IPv6
         if ipstr.find(':::') != -1:
@@ -1027,7 +1014,7 @@ def parseAddress(ipstr):
             if hextets.index('') < len(hextets) - 1 and hextets[hextets.index('') + 1] == '':
                 hextets.remove('')
 
-            for foo in range(9 - len(hextets)):
+            for _ in range(9 - len(hextets)):
                 hextets.insert(hextets.index(''), '0')
             hextets.remove('')
             if '' in hextets:
@@ -1077,10 +1064,7 @@ def parseAddress(ipstr):
         ret = long(ipstr)
         if ret > 0xffffffffffffffffffffffffffffffff:
             raise ValueError("IP Address cant be bigger than 2^128")
-        if ret <= 0xffffffff:
-            return (ret, 4)
-        else:
-            return (ret, 6)
+        return (ret, 4) if ret <= 0xffffffff else (ret, 6)
 
 
 def intToIp(ip, version):
@@ -1098,8 +1082,8 @@ def intToIp(ip, version):
             raise ValueError(
                 "IPv4 Addresses can't be larger than 0xffffffff: %s" %
                 (hex(ip)))
-        for l in range(4):
-            ret = str(ip & 0xff) + '.' + ret
+        for _ in range(4):
+            ret = f'{str(ip & 255)}.{ret}'
             ip = ip >> 8
         ret = ret[:-1]
     elif version == 6:
@@ -1111,7 +1095,7 @@ def intToIp(ip, version):
         for x in range(1, 33):
             ret = l[-x] + ret
             if x % 4 == 0:
-                ret = ':' + ret
+                ret = f':{ret}'
         ret = ret[1:]
     else:
         raise ValueError("only IPv4 and IPv6 supported")
@@ -1144,12 +1128,7 @@ def _ipVersionToLen(version):
 
 def _countFollowingZeros(l):
     """Return Nr. of elements containing 0 at the beginning th the list."""
-    if len(l) == 0:
-        return 0
-    elif l[0] != 0:
-        return 0
-    else:
-        return 1 + _countFollowingZeros(l[1:])
+    return 0 if len(l) == 0 or l[0] != 0 else 1 + _countFollowingZeros(l[1:])
 
 
 _BitTable = {'0': '0000', '1': '0001', '2': '0010', '3': '0011',
@@ -1168,9 +1147,8 @@ def _intToBin(val):
     if s[-1] == 'l':
         s = s[:-1]
     for x in s[2:]:
-        if __debug__:
-            if x not in _BitTable:
-                raise AssertionError("hex() returned strange result")
+        if __debug__ and x not in _BitTable:
+            raise AssertionError("hex() returned strange result")
         ret += _BitTable[x]
     # remove leading zeros
     while ret[0] == '0' and len(ret) > 1:
@@ -1193,11 +1171,9 @@ def _count0Bits(num):
     # this could be so easy if _count1Bits(~long(num)) would work as excepted
     num = long(num)
     if num < 0:
-        raise ValueError("Only positive Numbers please: %s" % (num))
+        raise ValueError(f"Only positive Numbers please: {num}")
     ret = 0
-    while num > 0:
-        if num & 1 == 1:
-            break
+    while num > 0 and num & 1 != 1:
         num = num >> 1
         ret += 1
     return ret
@@ -1225,14 +1201,8 @@ def _checkPrefix(ip, prefixlen, version):
     if prefixlen < 0 or prefixlen > bits:
         return None
 
-    if ip == 0:
-        zbits = bits + 1
-    else:
-        zbits = _count0Bits(ip)
-    if zbits < bits - prefixlen:
-        return 0
-    else:
-        return 1
+    zbits = bits + 1 if ip == 0 else _count0Bits(ip)
+    return 0 if zbits < bits - prefixlen else 1
 
 
 def _checkNetmask(netmask, masklen):
@@ -1259,10 +1229,7 @@ def _checkNetmask(netmask, masklen):
 
 def _checkNetaddrWorksWithPrefixlen(net, prefixlen, version):
     """Check if a base addess of e network is compatible with a prefixlen"""
-    if net & _prefixlenToNetmask(prefixlen, version) == net:
-        return 1
-    else:
-        return 0
+    return 1 if net & _prefixlenToNetmask(prefixlen, version) == net else 0
 
 
 def _netmaskToPrefixlen(netmask):
@@ -1301,6 +1268,4 @@ if __name__ == "__main__":
 
     t = [0xf0, 0xf00, 0xff00, 0xffff00, 0xffffff00]
     o = []
-    for x in t:
-        pass
     x = 0

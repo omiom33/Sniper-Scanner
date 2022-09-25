@@ -9,6 +9,7 @@ This code is covered by the standard Python License.
     Base functionality. Request and Response classes, that sort of thing.
 """
 
+
 import socket
 import string
 import types
@@ -23,10 +24,16 @@ class DNSError(Exception):
     pass
 
 
-defaults = {'protocol': 'udp', 'port': 53, 'opcode': Opcode.QUERY,
-            'qtype': Type.A, 'rd': 1, 'timing': 1, 'timeout': 30}
-
-defaults['server'] = []
+defaults = {
+    'protocol': 'udp',
+    'port': 53,
+    'opcode': Opcode.QUERY,
+    'qtype': Type.A,
+    'rd': 1,
+    'timing': 1,
+    'timeout': 30,
+    'server': [],
+}
 
 
 def ParseResolvConf(resolv_path):
@@ -56,11 +63,10 @@ def ParseResolvConf(resolv_path):
 
 def DiscoverNameServers():
     import sys
-    if sys.platform in ('win32', 'nt'):
-        import win32dns
-        defaults['server'] = win32dns.RegistryResolve()
-    else:
+    if sys.platform not in ('win32', 'nt'):
         return ParseResolvConf()
+    import win32dns
+    defaults['server'] = win32dns.RegistryResolve()
 
 
 class DnsRequest:
@@ -79,16 +85,11 @@ class DnsRequest:
             args['name'] = self.defaults['name']
         if isinstance(name, types.StringType):
             args['name'] = name
-        else:
-            if len(name) == 1:
-                if name[0]:
-                    args['name'] = name[0]
+        elif len(name) == 1 and name[0]:
+            args['name'] = name[0]
         for i in defaults.keys():
             if i not in args:
-                if i in self.defaults:
-                    args[i] = self.defaults[i]
-                else:
-                    args[i] = defaults[i]
+                args[i] = self.defaults[i] if i in self.defaults else defaults[i]
         if isinstance(args['server'], types.StringType):
             args['server'] = [args['server']]
         self.args = args

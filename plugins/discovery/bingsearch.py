@@ -23,8 +23,10 @@ class search_bing:
 
     def do_search(self):
         h = httplib.HTTP(self.server)
-        h.putrequest('GET', "/search?q=%40" + self.word +
-                     "&count=50&first=" + str(self.counter))
+        h.putrequest(
+            'GET', f"/search?q=%40{self.word}&count=50&first={str(self.counter)}"
+        )
+
         h.putheader('Host', self.hostname)
         h.putheader('Cookie', 'SRCHHPGUSR=ADLT=DEMOTE&NRSLT=50')
         h.putheader('Accept-Language', 'en-us,en')
@@ -36,8 +38,11 @@ class search_bing:
 
     def do_search_api(self):
         h = httplib.HTTP(self.apiserver)
-        h.putrequest('GET', "/xml.aspx?Appid=" + self.bingApi + "&query=%40" +
-                     self.word + "&sources=web&web.count=40&web.offset=" + str(self.counter))
+        h.putrequest(
+            'GET',
+            f"/xml.aspx?Appid={self.bingApi}&query=%40{self.word}&sources=web&web.count=40&web.offset={str(self.counter)}",
+        )
+
         h.putheader('Host', "api.search.live.net")
         h.putheader('User-agent', self.userAgent)
         h.endheaders()
@@ -47,8 +52,11 @@ class search_bing:
 
     def do_search_vhost(self):
         h = httplib.HTTP(self.server)
-        h.putrequest('GET', "/search?q=ip:" + self.word +
-                     "&go=&count=50&FORM=QBHL&qs=n&first=" + str(self.counter))
+        h.putrequest(
+            'GET',
+            f"/search?q=ip:{self.word}&go=&count=50&FORM=QBHL&qs=n&first={str(self.counter)}",
+        )
+
         h.putheader('Host', self.hostname)
         h.putheader(
             'Cookie', 'mkt=en-US;ui=en-US;SRCHHPGUSR=NEWWND=0&ADLT=DEMOTE&NRSLT=50')

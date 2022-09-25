@@ -18,7 +18,7 @@ class Checker():
         for x in self.hosts:
             try:
                 res = socket.gethostbyname(x)
-                self.realhosts.append(res + ":" + x)
+                self.realhosts.append(f"{res}:{x}")
             except Exception as e:
                 pass
         return self.realhosts

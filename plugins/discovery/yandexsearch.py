@@ -32,8 +32,10 @@ class search_yandex:
 
     def do_search_files(self, files):  # TODO
         h = httplib.HTTP(self.server)
-        h.putrequest('GET', "/search?text=%40" + self.word +
-                     "&numdoc=50&lr=" + str(self.counter))
+        h.putrequest(
+            'GET', f"/search?text=%40{self.word}&numdoc=50&lr={str(self.counter)}"
+        )
+
         h.putheader('Host', self.hostname)
         h.putheader('User-agent', self.userAgent)
         h.endheaders()

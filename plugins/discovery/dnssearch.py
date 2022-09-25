@@ -26,12 +26,12 @@ class dns_reverse():
         nameserver = DNS.defaults['server'][0]
         if self.verbose:
             ESC = chr(27)
-            sys.stdout.write(ESC + '[2K' + ESC + '[G')
+            sys.stdout.write(f'{ESC}[2K{ESC}[G')
             sys.stdout.write("\r\t" + host)
             sys.stdout.flush()
         try:
             name = DNS.Base.DnsRequest(b, qtype='ptr').req().answers[0]['data']
-            return host + ":" + name
+            return f"{host}:{name}"
         except:
             pass
 
@@ -198,7 +198,7 @@ class dns_tld():
         hostname = self.domain.split(".")[0] + "." + tld
         if self.verbose:
             ESC = chr(27)
-            sys.stdout.write(ESC + '[2K' + ESC + '[G')
+            sys.stdout.write(f'{ESC}[2K{ESC}[G')
             sys.stdout.write("\r\tSearching for: " + hostname)
             sys.stdout.flush()
         try:
@@ -208,7 +208,7 @@ class dns_tld():
                 server=self.nameserver).req(
             )
             hostip = test.answers[0]['data']
-            return hostip + ":" + hostname
+            return f"{hostip}:{hostname}"
         except Exception as e:
             pass
 
