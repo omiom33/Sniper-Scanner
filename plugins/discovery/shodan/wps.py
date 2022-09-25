@@ -24,7 +24,8 @@ class Skyhook:
     def locate(self, mac):
         # Remove the ':'
         mac = mac.replace(':', '')
-        print mac
+        # Remove the ':'
+        mac = mac.replace(':', '')
         data = """<?xml version='1.0'?>
         <LocationRQ xmlns='http://skyhookwireless.com/wps/2005' version='2.6' street-address-lookup='full'>
           <authentication version='2.0'>
@@ -43,8 +44,7 @@ class Skyhook:
             data=data,
             headers={'Content-type': 'text/xml'})
         response = urlopen(request)
-        result = response.read()
-        return result
+        return response.read()
 
 
 class GoogleLocation:

@@ -76,13 +76,13 @@ class WebAPI:
             if sources:
                 query += ' source:' + ','.join(sources)
             if cve:
-                query += ' cve:%s' % (str(cve).strip())
+                query += f' cve:{str(cve).strip()}'
             if osvdb:
-                query += ' osvdb:%s' % (str(osvdb).strip())
+                query += f' osvdb:{str(osvdb).strip()}'
             if msb:
-                query += ' msb:%s' % (str(msb).strip())
+                query += f' msb:{str(msb).strip()}'
             if bid:
-                query += ' bid:%s' % (str(bid).strip())
+                query += f' bid:{str(bid).strip()}'
             return self.parent._request('search_exploits', {'q': query})
 
     class ExploitDb:

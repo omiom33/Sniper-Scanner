@@ -26,12 +26,12 @@ class dns_reverse():
         nameserver = DNS.defaults['server'][0]
         if self.verbose:
             ESC = chr(27)
-            sys.stdout.write(ESC + '[2K' + ESC + '[G')
+            sys.stdout.write(f'{ESC}[2K{ESC}[G')
             sys.stdout.write("\r" + host)
             sys.stdout.flush()
         try:
             name = DNS.Base.DnsRequest(b, qtype='ptr').req().answers[0]['data']
-            return host + ":" + name
+            return f"{host}:{name}"
         except:
             pass
 
@@ -101,7 +101,7 @@ class dns_force():
         # nameserver=DNS.defaults['server'][0]
         if self.verbose:
             ESC = chr(27)
-            sys.stdout.write(ESC + '[2K' + ESC + '[G')
+            sys.stdout.write(f'{ESC}[2K{ESC}[G')
             sys.stdout.write("\r" + hostname)
             sys.stdout.flush()
         try:
@@ -111,7 +111,7 @@ class dns_force():
                 server=self.nameserver).req(
             )
             hostip = test.answers[0]['data']
-            return hostip + ":" + hostname
+            return f"{hostip}:{hostname}"
         except Exception as e:
             pass
 

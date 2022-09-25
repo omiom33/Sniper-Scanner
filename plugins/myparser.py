@@ -43,20 +43,19 @@ class parser:
             '[a-zA-Z0-9.-]*' +
             self.word)
         self.temp = reg_emails.findall(self.results)
-        emails = self.unique()
-        return emails
+        return self.unique()
 
     def fileurls(self, file):
-        urls = []
         reg_urls = re.compile('<a href="(.*?)"')
         self.temp = reg_urls.findall(self.results)
         allurls = self.unique()
-        for x in allurls:
-            if x.count('webcache') or x.count('google.com') or x.count('search?hl'):
-                pass
-            else:
-                urls.append(x)
-        return urls
+        return [
+            x
+            for x in allurls
+            if not x.count('webcache')
+            and not x.count('google.com')
+            and not x.count('search?hl')
+        ]
 
     def people_googleplus(self):
         self.results = re.sub('</b>', '', self.results)
@@ -133,8 +132,7 @@ class parser:
         self.genericClean()
         reg_hosts = re.compile('[a-zA-Z0-9.-]*\.' + self.word)
         self.temp = reg_hosts.findall(self.results)
-        hostnames = self.unique()
-        return hostnames
+        return self.unique()
 
     def set(self):
         reg_sets = re.compile('>[a-zA-Z0-9]*</a></font>')
@@ -150,13 +148,9 @@ class parser:
         reg_hosts = re.compile('<cite>(.*?)</cite>')
         temp = reg_hosts.findall(self.results)
         for x in temp:
-            if x.count(':'):
-                res = x.split(':')[1].split('/')[2]
-            else:
-                res = x.split("/")[0]
+            res = x.split(':')[1].split('/')[2] if x.count(':') else x.split("/")[0]
             self.temp.append(res)
-        hostnames = self.unique()
-        return hostnames
+        return self.unique()
 
     def unique(self):
         self.new = []

@@ -21,8 +21,11 @@ class search_exalead:
 
     def do_search(self):
         h = httplib.HTTP(self.server)
-        h.putrequest('GET', "/search/web/results/?q=%40" + self.word +
-                     "&elements_per_page=50&start_index=" + str(self.counter))
+        h.putrequest(
+            'GET',
+            f"/search/web/results/?q=%40{self.word}&elements_per_page=50&start_index={str(self.counter)}",
+        )
+
         h.putheader('Host', self.hostname)
         h.putheader(
             'Referer',

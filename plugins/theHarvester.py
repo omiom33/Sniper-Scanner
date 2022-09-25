@@ -19,7 +19,7 @@ def usage():
     comm = os.path.basename(sys.argv[0])
 
     if os.path.dirname(sys.argv[0]) == os.getcwd():
-        comm = "./" + comm
+        comm = f"./{comm}"
 
 
 def start(argv):

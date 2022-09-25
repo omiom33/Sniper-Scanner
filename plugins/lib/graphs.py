@@ -179,73 +179,73 @@ class BarGraph:
     def set_styles(self):
         """set graph styles"""
         if self.graphBGColor:
-            self.__cssGRAPH += 'background-color:' + self.graphBGColor + ';'
+            self.__cssGRAPH += f'background-color:{self.graphBGColor};'
         if self.graphBorder:
-            self.__cssGRAPH += 'border:' + self.graphBorder + ';'
+            self.__cssGRAPH += f'border:{self.graphBorder};'
         if self.barBorder:
-            self.__cssBAR += 'border:' + self.barBorder + ';'
+            self.__cssBAR += f'border:{self.barBorder};'
         if self.barBGColor:
-            self.__cssBARBG += 'background-color:' + self.barBGColor + ';'
+            self.__cssBARBG += f'background-color:{self.barBGColor};'
         if self.titleColor:
-            self.__cssTITLE += 'color:' + self.titleColor + ';'
+            self.__cssTITLE += f'color:{self.titleColor};'
         if self.titleBGColor:
-            self.__cssTITLE += 'background-color:' + self.titleBGColor + ';'
+            self.__cssTITLE += f'background-color:{self.titleBGColor};'
         if self.titleBorder:
-            self.__cssTITLE += 'border:' + self.titleBorder + ';'
+            self.__cssTITLE += f'border:{self.titleBorder};'
         if self.titleFont:
-            self.__cssTITLE += 'font-family:' + self.titleFont + ';'
+            self.__cssTITLE += f'font-family:{self.titleFont};'
         if self.titleAlign:
-            self.__cssTITLE += 'text-align:' + self.titleAlign + ';'
+            self.__cssTITLE += f'text-align:{self.titleAlign};'
         if self.titleSize:
-            self.__cssTITLE += 'font-size:' + str(self.titleSize) + 'px;'
+            self.__cssTITLE += f'font-size:{str(self.titleSize)}px;'
         if self.titleBGColor:
-            self.__cssTITLE += 'background-color:' + self.titleBGColor + ';'
+            self.__cssTITLE += f'background-color:{self.titleBGColor};'
         if self.titlePadding:
-            self.__cssTITLE += 'padding:' + str(self.titlePadding) + 'px;'
+            self.__cssTITLE += f'padding:{str(self.titlePadding)}px;'
         if self.labelColor:
-            self.__cssLABEL += 'color:' + self.labelColor + ';'
+            self.__cssLABEL += f'color:{self.labelColor};'
         if self.labelBGColor:
-            self.__cssLABEL += 'background-color:' + self.labelBGColor + ';'
+            self.__cssLABEL += f'background-color:{self.labelBGColor};'
         if self.labelBorder:
-            self.__cssLABEL += 'border:' + self.labelBorder + ';'
+            self.__cssLABEL += f'border:{self.labelBorder};'
         if self.labelFont:
-            self.__cssLABEL += 'font-family:' + self.labelFont + ';'
+            self.__cssLABEL += f'font-family:{self.labelFont};'
         if self.labelSize:
-            self.__cssLABEL += 'font-size:' + str(self.labelSize) + 'px;'
+            self.__cssLABEL += f'font-size:{str(self.labelSize)}px;'
         if self.labelAlign:
-            self.__cssLABEL += 'text-align:' + self.labelAlign + ';'
+            self.__cssLABEL += f'text-align:{self.labelAlign};'
         if self.labelBGColor:
-            self.__cssLABELBG += 'background-color:' + self.labelBGColor + ';'
+            self.__cssLABELBG += f'background-color:{self.labelBGColor};'
         if self.legendColor:
-            self.__cssLEGEND += 'color:' + self.legendColor + ';'
+            self.__cssLEGEND += f'color:{self.legendColor};'
         if self.legendFont:
-            self.__cssLEGEND += 'font-family:' + self.legendFont + ';'
+            self.__cssLEGEND += f'font-family:{self.legendFont};'
         if self.legendSize:
-            self.__cssLEGEND += 'font-size:' + str(self.legendSize) + 'px;'
+            self.__cssLEGEND += f'font-size:{str(self.legendSize)}px;'
         if self.legendBGColor:
             self.__cssLEGENDBG += 'background-color:' + \
-                self.legendBGColor + ';'
+                    self.legendBGColor + ';'
         if self.legendBorder:
-            self.__cssLEGENDBG += 'border:' + self.legendBorder + ';'
+            self.__cssLEGENDBG += f'border:{self.legendBorder};'
         if self.absValuesColor:
-            self.__cssABSVALUES += 'color:' + self.absValuesColor + ';'
+            self.__cssABSVALUES += f'color:{self.absValuesColor};'
         if self.absValuesBGColor:
             self.__cssABSVALUES += 'background-color:' + \
-                self.absValuesBGColor + ';'
+                    self.absValuesBGColor + ';'
         if self.absValuesBorder:
-            self.__cssABSVALUES += 'border:' + self.absValuesBorder + ';'
+            self.__cssABSVALUES += f'border:{self.absValuesBorder};'
         if self.absValuesFont:
-            self.__cssABSVALUES += 'font-family:' + self.absValuesFont + ';'
+            self.__cssABSVALUES += f'font-family:{self.absValuesFont};'
         if self.absValuesSize:
             self.__cssABSVALUES += 'font-size:' + \
-                str(self.absValuesSize) + 'px;'
+                    str(self.absValuesSize) + 'px;'
         if self.percValuesColor:
-            self.__cssPERCVALUES += 'color:' + self.percValuesColor + ';'
+            self.__cssPERCVALUES += f'color:{self.percValuesColor};'
         if self.percValuesFont:
-            self.__cssPERCVALUES += 'font-family:' + self.percValuesFont + ';'
+            self.__cssPERCVALUES += f'font-family:{self.percValuesFont};'
         if self.percValuesSize:
             self.__cssPERCVALUES += 'font-size:' + \
-                str(self.percValuesSize) + 'px;'
+                    str(self.percValuesSize) + 'px;'
 
     def level_color(self, value, color):
         """return bar color for each level"""
@@ -262,12 +262,12 @@ class BarGraph:
     def build_bar(self, value, width, height, color):
         """return a single bar"""
         title = self.absValuesPrefix + str(value) + self.absValuesSuffix
-        bg = self.__img_pattern.search(color) and 'background' or 'bgcolor'
+        bg = 'background' if self.__img_pattern.search(color) else 'bgcolor'
         bar = '<table border=0 cellspacing=0 cellpadding=0><tr>'
         bar += '<td style="' + self.__cssBAR + '" ' + bg + '="' + color + '"'
         bar += (value != '') and ' title="' + title + '">' or '>'
         bar += '<div style="width:' + \
-            str(width) + 'px; height:' + str(height) + 'px;'
+                str(width) + 'px; height:' + str(height) + 'px;'
         bar += ' line-height:1px; font-size:1px;"></div>'
         bar += '</td></tr></table>'
         return bar
@@ -277,8 +277,8 @@ class BarGraph:
         fader = '<table border=0 cellspacing=0 cellpadding=0><tr>'
         x -= int(round(width / 2))
         if x > 0:
-            fader += '<td width=' + str(x) + '></td>'
-        fader += '<td>' + self.build_bar(value, width, height, color) + '</td>'
+            fader += f'<td width={x}></td>'
+        fader += f'<td>{self.build_bar(value, width, height, color)}</td>'
         fader += '</tr></table>'
         return fader
 
@@ -289,13 +289,11 @@ class BarGraph:
             sum = _number_format(sum, max_dec)
         value = '<td style="' + self.__cssABSVALUES + '"'
         if align:
-            value += ' align=' + align
+            value += f' align={align}'
         value += ' nowrap>'
-        value += '&nbsp;' + self.absValuesPrefix + \
-            str(val) + self.absValuesSuffix
+        value += f'&nbsp;{self.absValuesPrefix}{str(val)}{self.absValuesSuffix}'
         if sum:
-            value += ' / ' + self.absValuesPrefix + \
-                str(sum) + self.absValuesSuffix
+            value += f' / {self.absValuesPrefix}{str(sum)}{self.absValuesSuffix}'
         value += '&nbsp;</td>'
         return value
 
@@ -306,27 +304,25 @@ class BarGraph:
         legend = '<table border=0 cellspacing=0 cellpadding=0><tr>'
         legend += '<td style="' + self.__cssLEGENDBG + '">'
         legend += '<table border=0 cellspacing=4 cellpadding=0>'
-        i = 0
+        for i, color in enumerate(barColors):
+            text = (
+                hasattr(self.legend[i], 'strip')
+                and self.legend[i].strip()
+                or str(self.legend[i])
+                if len(self.legend) >= i + 1
+                else ''
+            )
 
-        for color in barColors:
-            if len(self.legend) >= i + 1:
-                text = hasattr(
-                    self.legend[i],
-                    'strip') and self.legend[i].strip() or str(self.legend[i])
-            else:
-                text = ''
             legend += '<tr>'
             legend += '<td>' + \
-                self.build_bar(
+                    self.build_bar(
                     '',
                     self.barWidth,
                     self.barWidth,
                     color) + '</td>'
             legend += '<td style="' + self.__cssLEGEND + \
-                '" nowrap>' + text + '</td>'
+                    '" nowrap>' + text + '</td>'
             legend += '</tr>'
-            i += 1
-
         legend += '</table></td></tr></table>'
         return legend
 
@@ -349,21 +345,21 @@ class BarGraph:
         if percent < 0:
             percent *= -1
             bar += '<td style="' + self.__cssLABELBG + '" height=' + \
-                str(self.barWidth) + ' width=' + \
-                str(int(round((mPerc_neg - percent) * mul + valSpace))) + \
-                ' align=right nowrap>'
+                    str(self.barWidth) + ' width=' + \
+                    str(int(round((mPerc_neg - percent) * mul + valSpace))) + \
+                    ' align=right nowrap>'
             if self.showValues < 2:
                 bar += '<span style="' + self.__cssPERCVALUES + '">' + \
-                    str(_number_format(percent, self.percValuesDecimals)) + \
-                    '%</span>'
+                        str(_number_format(percent, self.percValuesDecimals)) + \
+                        '%</span>'
             bar += '&nbsp;</td><td style="' + self.__cssLABELBG + '">'
             bar += self.build_bar(value, int(round(percent * mul)),
                                   self.barWidth, bColor)
-            bar += '</td><td width=' + str(spacer) + '></td>'
+            bar += f'</td><td width={str(spacer)}></td>'
         else:
             if max_neg:
                 bar += '<td style="' + self.__cssLABELBG + \
-                    '" width=' + str(spacer_neg) + '>'
+                        '" width=' + str(spacer_neg) + '>'
                 bar += '<table border=0 cellspacing=0 cellpadding=0><tr><td></td></tr></table></td>'
             if percent:
                 bar += '<td>'
@@ -372,13 +368,13 @@ class BarGraph:
                 bar += '</td>'
             else:
                 bar += '<td width=1 height=' + \
-                    str(self.barWidth + (border * 2)) + '></td>'
+                        str(self.barWidth + (border * 2)) + '></td>'
             bar += '<td style="' + self.__cssPERCVALUES + '" width=' + \
-                str(int(round((mPerc - percent) * mul + valSpace))) + \
-                ' align=left nowrap>'
+                    str(int(round((mPerc - percent) * mul + valSpace))) + \
+                    ' align=left nowrap>'
             if self.showValues < 2:
                 bar += '&nbsp;' + \
-                    str(_number_format(percent, self.percValuesDecimals)) + '%'
+                        str(_number_format(percent, self.percValuesDecimals)) + '%'
             bar += '&nbsp;</td>'
 
         bar += '</tr></table>'

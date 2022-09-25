@@ -35,11 +35,7 @@ class search_ask:
     def check_next(self):
         renext = re.compile('>  Next  <')
         nextres = renext.findall(self.results)
-        if nextres != []:
-            nexty = "1"
-        else:
-            nexty = "0"
-        return nexty
+        return "1" if nextres != [] else "0"
 
     def get_people(self):
         rawres = myparser.parser(self.totalresults, self.word)

@@ -29,12 +29,10 @@ def binipdisplay(s):
     if len(s) % 4 != 0:
         raise EnvironmentError  # well ...
     ol = []
-    for i in range(len(s) / 4):
+    for _ in range(len(s) / 4):
         s1 = s[:4]
         s = s[4:]
-        ip = []
-        for j in s1:
-            ip.append(str(ord(j)))
+        ip = [str(ord(j)) for j in s1]
         ol.append(string.join(ip, '.'))
     return ol
 
@@ -59,7 +57,7 @@ def RegistryResolve():
             y = _winreg.OpenKey(x,
                                 r"SYSTEM\CurrentControlSet\Services\VxD\MSTCP")
             nameserver, dummytype = _winreg.QueryValueEx(y, 'NameServer')
-            if nameserver and not (nameserver in nameservers):
+            if nameserver and nameserver not in nameservers:
                 nameservers.extend(stringdisplay(nameserver))
         except EnvironmentError:
             pass
@@ -101,7 +99,7 @@ def RegistryResolve():
                 try:
                     nameserver, dummytype = _winreg.QueryValueEx(
                         z, 'NameServer')
-                    if nameserver and not (nameserver in nameservers):
+                    if nameserver and nameserver not in nameservers:
                         nameservers.extend(stringdisplay(nameserver))
                 except EnvironmentError:
                     pass

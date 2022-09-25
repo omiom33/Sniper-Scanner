@@ -31,34 +31,35 @@ class element:
     def __init__(self, tag, case='lower', parent=None):
         self.parent = parent
 
-        if case == 'lower':
-            self.tag = tag.lower()
-        else:
-            self.tag = tag.upper()
+        self.tag = tag.lower() if case == 'lower' else tag.upper()
 
     def __call__(self, *args, **kwargs):
         if len(args) > 1:
             raise ArgumentError(self.tag)
 
         # if class_ was defined in parent it should be added to every element
-        if self.parent is not None and self.parent.class_ is not None:
-            if 'class_' not in kwargs:
-                kwargs['class_'] = self.parent.class_
+        if (
+            self.parent is not None
+            and self.parent.class_ is not None
+            and 'class_' not in kwargs
+        ):
+            kwargs['class_'] = self.parent.class_
 
-        if self.parent is None and len(args) == 1:
-            x = [self.render(self.tag, False, myarg, mydict)
-                 for myarg, mydict in _argsdicts(args, kwargs)]
-            return '\n'.join(x)
-        elif self.parent is None and len(args) == 0:
-            x = [self.render(self.tag, True, myarg, mydict)
-                 for myarg, mydict in _argsdicts(args, kwargs)]
-            return '\n'.join(x)
+        if self.parent is None:
+            if len(args) == 1:
+                x = [self.render(self.tag, False, myarg, mydict)
+                     for myarg, mydict in _argsdicts(args, kwargs)]
+                return '\n'.join(x)
+            elif not args:
+                x = [self.render(self.tag, True, myarg, mydict)
+                     for myarg, mydict in _argsdicts(args, kwargs)]
+                return '\n'.join(x)
 
         if self.tag in self.parent.twotags:
             for myarg, mydict in _argsdicts(args, kwargs):
                 self.render(self.tag, False, myarg, mydict)
         elif self.tag in self.parent.onetags:
-            if len(args) == 0:
+            if not args:
                 for myarg, mydict in _argsdicts(args, kwargs):
                     # here myarg is always None, because len( args ) = 0
                     self.render(self.tag, True, myarg, mydict)
@@ -72,7 +73,7 @@ class element:
     def render(self, tag, single, between, kwargs):
         """Append the actual tags to content."""
 
-        out = "<%s" % tag
+        out = f"<{tag}"
         for key, value in kwargs.iteritems():
             # when value is None that means stuff like <... checked>
             if value is not None:
@@ -85,14 +86,11 @@ class element:
                     key = 'accept-charset'
                 out = "%s %s=\"%s\"" % (out, key, escape(value))
             else:
-                out = "%s %s" % (out, key)
+                out = f"{out} {key}"
         if between is not None:
-            out = "%s>%s</%s>" % (out, between, tag)
+            out = f"{out}>{between}</{tag}>"
         else:
-            if single:
-                out = "%s />" % out
-            else:
-                out = "%s>" % out
+            out = f"{out} />" if single else f"{out}>"
         if self.parent is not None:
             self.parent.content.append(out)
         else:
@@ -102,7 +100,7 @@ class element:
         """Append a closing tag unless element has only opening tag."""
 
         if self.tag in self.parent.twotags:
-            self.parent.content.append("</%s>" % self.tag)
+            self.parent.content.append(f"</{self.tag}>")
         elif self.tag in self.parent.onetags:
             raise ClosingError(self.tag)
         elif self.parent.mode == 'strict_html' and self.tag in self.parent.deptags:
@@ -186,7 +184,7 @@ class page:
         self._full = False
         self.class_ = class_
 
-        if mode == 'strict_html' or mode == 'html':
+        if mode in ['strict_html', 'html']:
             self.onetags = valid_onetags
             self.onetags += map(string.lower, self.onetags)
             self.twotags = valid_twotags
@@ -204,7 +202,7 @@ class page:
             if onetags and twotags:
                 self.onetags = onetags
                 self.twotags = twotags
-            elif (onetags and not twotags) or (twotags and not onetags):
+            elif onetags or twotags:
                 raise CustomizationError()
             else:
                 self.onetags = russell()
@@ -220,7 +218,7 @@ class page:
 
     def __str__(self):
 
-        if self._full and (self.mode == 'strict_html' or self.mode == 'loose_html'):
+        if self._full and self.mode in ['strict_html', 'loose_html']:
             end = ['</body>', '</html>']
         else:
             end = []
@@ -240,10 +238,7 @@ class page:
                     True    replace < and > by &lt; and &gt;
                             the default escape sequences in most browsers"""
 
-        if escape:
-            return _escape(self.__str__())
-        else:
-            return self.__str__()
+        return _escape(self.__str__()) if escape else self.__str__()
 
     def add(self, text):
         """This is an alias to addcontent."""
@@ -306,17 +301,14 @@ class page:
 
         self._full = True
 
-        if self.mode == 'strict_html' or self.mode == 'loose_html':
+        if self.mode in ['strict_html', 'loose_html']:
             if doctype is None:
                 doctype = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>"
             self.header.append(doctype)
             self.html(lang=lang)
             self.head()
             if charset is not None:
-                self.meta(
-                    http_equiv='Content-Type',
-                    content="text/html; charset=%s" %
-                    charset)
+                self.meta(http_equiv='Content-Type', content=f"text/html; charset={charset}")
             if metainfo is not None:
                 self.metainfo(metainfo)
             if css is not None:
@@ -379,7 +371,7 @@ class page:
 
         if isinstance(mydict, dict):
             for src, type in mydict.iteritems():
-                self.script('', src=src, type='text/%s' % type)
+                self.script('', src=src, type=f'text/{type}')
         else:
             raise TypeError(
                 "Script should be given a dictionary of src:type pairs.")
@@ -438,15 +430,13 @@ def _totuple(x):
     """Utility stuff to convert string, int, float, None or anything to a usable tuple."""
 
     if isinstance(x, basestring):
-        out = x,
+        return x,
     elif isinstance(x, (int, float)):
-        out = str(x),
+        return str(x),
     elif x is None:
-        out = None,
+        return None,
     else:
-        out = tuple(x)
-
-    return out
+        return tuple(x)
 
 
 def escape(text, newline=False):
@@ -463,9 +453,8 @@ def escape(text, newline=False):
             text = text.replace('\"', '&quot;')
         if '\'' in text:
             text = text.replace('\'', '&quot;')
-        if newline:
-            if '\n' in text:
-                text = text.replace('\n', '<br>')
+        if newline and '\n' in text:
+            text = text.replace('\n', '<br>')
 
     return text
 

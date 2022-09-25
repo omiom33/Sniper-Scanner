@@ -19,8 +19,14 @@ class search_dogpile:
         h = httplib.HTTP(self.server)
 
         # Dogpile is hardcoded to return 10 results
-        h.putrequest('GET', "/search/web?qsi=" + str(self.counter)
-                     + "&q=\"%40" + self.word + "\"")
+        h.putrequest(
+            'GET',
+            (
+                ((f"/search/web?qsi={str(self.counter)}" + "&q=\"%40") + self.word)
+                + "\""
+            ),
+        )
+
         h.putheader('Host', self.hostname)
         h.putheader('User-agent', self.userAgent)
         h.endheaders()

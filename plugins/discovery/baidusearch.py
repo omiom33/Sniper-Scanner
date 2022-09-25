@@ -18,8 +18,7 @@ class search_baidu:
     def do_search(self):
         h = httplib.HTTP(self.server)
 
-        h.putrequest('GET', "/s?wd=%40" + self.word
-                     + "&pn=" + str(self.counter))
+        h.putrequest('GET', f"/s?wd=%40{self.word}&pn={str(self.counter)}")
         h.putheader('Host', self.hostname)
         h.putheader('User-agent', self.userAgent)
         h.endheaders()

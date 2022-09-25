@@ -16,13 +16,13 @@ class search_pgp:
 
     def process(self):
         h = httplib.HTTP(self.server)
-        h.putrequest('GET', "/pks/lookup?search=" + self.word + "&op=index")
+        h.putrequest('GET', f"/pks/lookup?search={self.word}&op=index")
         h.putheader('Host', self.hostname)
         h.putheader('User-agent', self.userAgent)
         h.endheaders()
         returncode, returnmsg, headers = h.getreply()
-        print returncode
-        print returnmsg
+        h = httplib.HTTP(self.server)
+        h = httplib.HTTP(self.server)
         self.results = h.getfile().read()
 
     def get_emails(self):
